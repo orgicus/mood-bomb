@@ -26,7 +26,8 @@ import fal_client
 import time
 import tempfile
 import requests
-from supabase import create_client
+from supabase import create_client, Client
+from elevenlabs import generate, play, set_api_key
 
 # Load environment variables
 load_dotenv()
@@ -36,10 +37,16 @@ ELEVENLABS_API_KEY = os.getenv('ELEVENLABS_API_KEY')
 ELEVENLABS_VOICE_ID = os.getenv('ELEVENLABS_VOICE_ID', 'default_voice_id')
 
 # Initialize Supabase client
-supabase = create_client(
+supabase: Client = create_client(
     os.getenv('SUPABASE_URL'),
     os.getenv('SUPABASE_KEY')
 )
+
+# Initialize FAL client
+fal.set_key(os.getenv('FAL_KEY'))
+
+# Initialize ElevenLabs
+set_api_key(ELEVENLABS_API_KEY)
 
 app = Flask(__name__)
 CORS(app, resources={
@@ -49,7 +56,7 @@ CORS(app, resources={
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 
 def validate_supabase_url(image_url):
     """
@@ -347,10 +354,13 @@ if __name__ == "__main__":
     
     print("Starting video processing server...")
     print("Required environment variables found")
-    print("Server will be available at http://localhost:9887")
+    
+    # Get port from environment variable or use 9887 as fallback
+    port = int(os.getenv('PORT', 9887))
+    print(f"Server will be available at http://localhost:{port}")
     print("\nEndpoints:")
     print("  POST /process-video - Main processing endpoint")
     print("  GET /health - Health check")
     print("  GET / - API info")
     
-    app.run(debug=True, host='0.0.0.0', port=9887)
+    app.run(debug=True, host='0.0.0.0', port=port)
