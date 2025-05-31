@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Video, Sparkles, Heart } from 'lucide-react';
 
@@ -7,13 +6,15 @@ interface VideoPreviewProps {
   videoPrompt: string;
   friendMessage: string;
   onCreateVideo: () => void;
+  finalVideoUrl?: string | null;
 }
 
 const VideoPreview: React.FC<VideoPreviewProps> = ({ 
   uploadedImage, 
   videoPrompt, 
   friendMessage, 
-  onCreateVideo 
+  onCreateVideo, 
+  finalVideoUrl
 }) => {
   const isReady = uploadedImage && videoPrompt && friendMessage;
 
@@ -24,36 +25,44 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
       </h3>
       
       <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-6 border-3 border-green-200">
-        {uploadedImage ? (
-          <div className="relative">
-            <img 
-              src={uploadedImage} 
-              alt="Preview" 
-              className="w-full h-48 object-cover rounded-xl border-2 border-green-300"
-            />
-            {videoPrompt && (
-              <div className="absolute top-2 left-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                <Sparkles size={12} />
-                Effects: {videoPrompt.slice(0, 20)}...
-              </div>
-            )}
-            {friendMessage && (
-              <div className="absolute bottom-2 left-2 right-2 bg-black bg-opacity-70 text-white p-3 rounded-xl">
-                <div className="flex items-center gap-2 mb-1">
-                  <Heart size={14} />
-                  <span className="text-xs font-semibold">Your Message:</span>
-                </div>
-                <p className="text-sm">{friendMessage}</p>
-              </div>
-            )}
-          </div>
+        {finalVideoUrl ? (
+          <video 
+            src={finalVideoUrl} 
+            controls 
+            className="w-full h-48 object-cover rounded-xl border-2 border-green-300"
+          />
         ) : (
-          <div className="h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <Video size={48} className="mx-auto mb-2" />
-              <p>Upload an image to see preview</p>
+          uploadedImage ? (
+            <div className="relative">
+              <img 
+                src={uploadedImage} 
+                alt="Preview" 
+                className="w-full h-48 object-cover rounded-xl border-2 border-green-300"
+              />
+              {videoPrompt && (
+                <div className="absolute top-2 left-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                  <Sparkles size={12} />
+                  Effects: {videoPrompt.slice(0, 20)}...
+                </div>
+              )}
+              {friendMessage && (
+                <div className="absolute bottom-2 left-2 right-2 bg-black bg-opacity-70 text-white p-3 rounded-xl">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Heart size={14} />
+                    <span className="text-xs font-semibold">Your Message:</span>
+                  </div>
+                  <p className="text-sm">{friendMessage}</p>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center">
+              <div className="text-center text-gray-500">
+                <Video size={48} className="mx-auto mb-2" />
+                <p>Upload an image to see preview</p>
+              </div>
+            </div>
+          )
         )}
       </div>
       

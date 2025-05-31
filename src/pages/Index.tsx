@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ImageUpload from '../components/ImageUpload';
 import TextPromptInput from '../components/TextPromptInput';
@@ -6,12 +5,14 @@ import MessageInput from '../components/MessageInput';
 import VideoPreview from '../components/VideoPreview';
 import { Sparkles, Heart, Video, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { processVideo } from '../services/videoProcessing';
 
 const Index = () => {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [videoPrompt, setVideoPrompt] = useState('');
   const [friendMessage, setFriendMessage] = useState('');
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
+  const [finalVideoUrl, setFinalVideoUrl] = useState<string | null>(null);
 
   const handleImageUpload = (file: File, url: string) => {
     console.log('Image uploaded:', { file, url });
@@ -23,9 +24,27 @@ const Index = () => {
     toast.success('Photo removed');
   };
 
-  const handleCreateVideo = () => {
+  const handleCreateVideo = async () => {
+    if (!uploadedImage || !videoPrompt || !friendMessage) {
+      toast.error('Please complete all fields');
+      return;
+    }
+
     setIsCreatingVideo(true);
-    toast.success('🎬 Video creation started!');
+    toast.loading('🎬 Creating your magical video...');
+
+    try {
+      // Use the existing Supabase URL directly
+      const result = await processVideo(uploadedImage, videoPrompt, friendMessage);
+
+      // Update the UI with the result
+      setFinalVideoUrl(result.video_url);
+      toast.success('✨ Your magical video is ready!');
+    } catch (error) {
+      console.error('Error creating video:', error);
+      toast.error('Failed to create video. Please try again.');
+      setIsCreatingVideo(false);
+    }
   };
 
   const handleBackToEditor = () => {
@@ -65,14 +84,22 @@ const Index = () => {
             </div>
             
             <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl aspect-video flex items-center justify-center border-4 border-dashed border-gray-300">
-              <div className="text-center text-gray-600">
-                <Video size={80} className="mx-auto mb-4 text-gray-400" />
-                <h3 className="text-2xl font-bold mb-2">Video Placeholder</h3>
-                <p className="text-lg">Your magical video would appear here!</p>
-                <p className="text-sm mt-2 opacity-75">
-                  This would integrate with a video generation API
-                </p>
-              </div>
+              {finalVideoUrl ? (
+                <video 
+                  src={finalVideoUrl} 
+                  controls 
+                  className="w-full h-full object-contain rounded-xl"
+                />
+              ) : (
+                <div className="text-center text-gray-600">
+                  <Video size={80} className="mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-2xl font-bold mb-2">Processing Video...</h3>
+                  <p className="text-lg">Your magical video is being created!</p>
+                  <p className="text-sm mt-2 opacity-75">
+                    This may take a few moments
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="mt-6 flex justify-center gap-4">
@@ -134,6 +161,7 @@ const Index = () => {
               videoPrompt={videoPrompt}
               friendMessage={friendMessage}
               onCreateVideo={handleCreateVideo}
+              finalVideoUrl={finalVideoUrl}
             />
           </div>
         </div>
