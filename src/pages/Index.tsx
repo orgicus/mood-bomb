@@ -13,13 +13,9 @@ const Index = () => {
   const [friendMessage, setFriendMessage] = useState('');
   const [isCreatingVideo, setIsCreatingVideo] = useState(false);
 
-  const handleImageUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setUploadedImage(e.target?.result as string);
-      toast.success('📸 Photo uploaded successfully!');
-    };
-    reader.readAsDataURL(file);
+  const handleImageUpload = (file: File, url: string) => {
+    console.log('Image uploaded:', { file, url });
+    setUploadedImage(url);
   };
 
   const handleRemoveImage = () => {
