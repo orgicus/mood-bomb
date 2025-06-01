@@ -44,7 +44,12 @@ supabase: Client = create_client(
 app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:8080", "http://127.0.0.1:8080"],
+        "origins": [
+            "http://localhost:5173",
+            "http://localhost:8080",
+            "http://127.0.0.1:8080",
+            "https://mood-bomb-production.up.railway.app"
+        ],
         "methods": ["GET", "POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
