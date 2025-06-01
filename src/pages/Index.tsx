@@ -38,7 +38,7 @@ const Index = () => {
       const result = await processVideo(uploadedImage, videoPrompt, friendMessage);
 
       // Update the UI with the result
-      setFinalVideoUrl(result.video_url);
+      setFinalVideoUrl(result);
       toast.success('✨ Your magical video is ready!');
     } catch (error) {
       console.error('Error creating video:', error);

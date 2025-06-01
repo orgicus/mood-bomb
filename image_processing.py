@@ -27,7 +27,6 @@ import time
 import tempfile
 import requests
 from supabase import create_client, Client
-from elevenlabs import generate, play, set_api_key
 
 # Load environment variables
 load_dotenv()
@@ -41,12 +40,6 @@ supabase: Client = create_client(
     os.getenv('SUPABASE_URL'),
     os.getenv('SUPABASE_KEY')
 )
-
-# Initialize FAL client
-fal.set_key(os.getenv('FAL_KEY'))
-
-# Initialize ElevenLabs
-set_api_key(ELEVENLABS_API_KEY)
 
 app = Flask(__name__)
 CORS(app, resources={
